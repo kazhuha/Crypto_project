@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html lang="ru">
-    <head>
-        <title>coin tracker</title>
-    </head>
-    <body>
-        <nav>
-            <a href="transactions/">Тразакции</a>
-        </nav>
-        <h1>Главная страница</h1>
-    </body>
-</html>
+{% extends 'base.html' %}
+{% block title %} главная {% endblock  %}
+{% block content %}
+  <div class="container text-center">
+    <h5>Главная страница</h5>
+  </div>
+  <div class="container text-center">
+    {{ text }}
+  </div>
+{% endblock  %}

@@ -1,12 +1,33 @@
-<!DOCTYPE html>
-<html lang="ru">
-    <head>
-        <title>coin tracker</title>
-    </head>
-    <body>
-        <nav>
-            <a href="transactions/">Тразакции</a>
-        </nav>
-        <h1>Страница с транзакциями</h1>
-    </body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}
+  transactions
+{% endblock  %}
+
+{% block content %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Date</th>
+        <th scope="col">Pair</th>
+        <th scope="col">Side</th>
+        <th scope="col">Price</th>
+        <th scope="col">Amount</th>
+        <th scope="col">Fee</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for trans in transactions %}
+        <tr>
+          <td>{{ trans.tranaction_date }}</td>
+          <td>{{ trans.first_coin }}/{{ trans.second_coin }}</td>
+          <td>{{ trans.side }}</td>
+          <td>{{ trans.price }}</td>
+          <td>{{ trans.amount }}</td>
+          <td>{{ trans.comission }} {{ trans.comission_token }}</td>
+        </tr>
+      {% endfor %}  
+    </tbody>
+  </table>
+{% endblock  %}
+
