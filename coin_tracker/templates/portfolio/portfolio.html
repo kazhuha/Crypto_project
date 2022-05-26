@@ -8,19 +8,18 @@
   <table class="table">
     <thead>
       <tr>
-        <th scope="col">Name</th>
-        <th scope="col">Ticker</th>
+        <th scope="col">Token</th>
         <th scope="col">Amount</th>
       </tr>
     </thead>
     <tbody>
       {% for token in tokens %}
         <tr>
-          <td>{{ token.token.name }}</td>
-          <td>{{ token.token }}</td>
-          <td></td>
+          <td>{{ token.coin }}</td>
+          <td>{{ token.amount }}</td>
         </tr>
       {% endfor %}  
     </tbody>
   </table>
+  <p>{{ btc.amount }}</p>
 {% endblock  %}

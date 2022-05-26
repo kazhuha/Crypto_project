@@ -1,14 +1,9 @@
 from django.contrib import admin
 
-from .models import Portfolio, Token, Transactions
+from .models import Transaction, Portfolio
 
 
-class TokenAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'name', 'ticker',)
-    search_fields = ('ticker',)
-
-
-class TransactionsAdmin(admin.ModelAdmin):
+class TransactionAdmin(admin.ModelAdmin):
     list_display = (
         'tranaction_date',
         'first_coin',
@@ -21,13 +16,16 @@ class TransactionsAdmin(admin.ModelAdmin):
         'buyer'
     )
     search_fields = ('side', 'first_coin', 'second_coin')
+    list_filter = ('side', 'first_coin', 'second_coin')
 
 
 class PortfolioAdmin(admin.ModelAdmin):
-    list_display = ('owner', 'token',)
-    search_fields = ('owner', 'token')
+    list_display = (
+        'owner',
+        'coin',
+        'amount'
+    )
 
 
-admin.site.register(Token, TokenAdmin)
-admin.site.register(Transactions, TransactionsAdmin)
+admin.site.register(Transaction, TransactionAdmin)
 admin.site.register(Portfolio, PortfolioAdmin)

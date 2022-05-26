@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404, render
+from django.db.models import Sum
 
-from .models import Portfolio, Token, Transactions
+from .models import Portfolio, Transaction
 
 
 def index(request):
@@ -12,30 +13,26 @@ def index(request):
     return render(request, template, context)
 
 
-def token_list(request):
-    template = 'portfolio/token_list.html'
-    tokens = Portfolio.objects.filter(owner=request.user)
-    context = {
-        'tokens': tokens,
-    }
-    return render(request, template, context)
-
-
-def token_detail(requset, pk):
-    template = 'portfolio/token_detail.html'
-    token = get_object_or_404(Token, pk=pk)
-    context = {
-        'token': token
-    }
-    return render(requset, template, context)
-
-
 def transactions(request):
     template = 'portfolio/transactions.html'
     user = request.user
-    transactions = Transactions.objects.filter(buyer=user)
+    transactions = Transaction.objects.filter(buyer=user)
     context = {
         'transactions': transactions,
         'user': user
     }
     return render(request, template, context)
+
+
+def portfolio(requset):
+    template = 'portfolio/portfolio.html'
+    user = requset.user
+    tokens = Portfolio.objects.filter(owner=user)
+    for token in tokens:
+        token_sum = Transaction.objects.filter(buyer=user, first_coin=token.coin).aggregate(Sum('amount'))
+        token.amount = token_sum['amount__sum']
+        token.save()
+    context = {
+        'tokens': tokens,
+    }
+    return render(requset, template, context)
