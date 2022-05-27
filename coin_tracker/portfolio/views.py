@@ -1,7 +1,26 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import render, get_object_or_404
+from django.views.generic.edit import CreateView
 from django.db.models import Sum
 
 from .models import Portfolio, Transaction
+from .forms import PortfolioForm, TransactionForm
+
+
+def amount_calc(transactions, position):
+    buy_summ = transactions.filter(side='BUY').aggregate(
+        Sum('amount')
+    )['amount__sum']
+    buy_fee = transactions.filter(side='BUY').aggregate(Sum('fee'))['fee__sum']
+    sell_summ = transactions.filter(side='SELL').aggregate(
+        Sum('amount')
+    )['amount__sum']
+    if buy_summ is None:
+        buy_summ, buy_fee = 0, 0
+    if sell_summ is None:
+        sell_summ = 0
+    total = buy_summ - buy_fee - sell_summ
+    position.amount = total
+    position.save()
 
 
 def index(request):
@@ -13,26 +32,37 @@ def index(request):
     return render(request, template, context)
 
 
-def transactions(request):
-    template = 'portfolio/transactions.html'
-    user = request.user
-    transactions = Transaction.objects.filter(buyer=user)
+def portfolio(request):
+    template = 'portfolio/portfolio.html'
+    tokens = Portfolio.objects.filter(owner=request.user)
     context = {
-        'transactions': transactions,
-        'user': user
+        'tokens': tokens
     }
     return render(request, template, context)
 
 
-def portfolio(requset):
-    template = 'portfolio/portfolio.html'
-    user = requset.user
-    tokens = Portfolio.objects.filter(owner=user)
-    for token in tokens:
-        token_sum = Transaction.objects.filter(buyer=user, first_coin=token.coin).aggregate(Sum('amount'))
-        token.amount = token_sum['amount__sum']
-        token.save()
+class PortfolioAddToken(CreateView):
+    template_name = 'portfolio/porfolio_add_token.html'
+    form_class = PortfolioForm
+    success_url = '/portfolio/'
+
+
+def token_detail(request, pk):
+    template = 'portfolio/token_detail.html'
+    position = get_object_or_404(Portfolio, pk=pk)
+    transactions = Transaction.objects.filter(
+        buyer=request.user,
+        buy_or_sell=position.coin.pk
+    )
+    amount_calc(transactions, position)
     context = {
-        'tokens': tokens,
+        'position': position,
+        'transactions': transactions,
     }
-    return render(requset, template, context)
+    return render(request, template, context)
+
+
+class PortfolioAddTransaction(CreateView):
+    template_name = 'portfolio/portfolio_add_transaction.html'
+    form_class = TransactionForm
+    success_url = '/portfolio/'

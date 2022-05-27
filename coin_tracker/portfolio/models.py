@@ -1,17 +1,51 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
-from django.forms import FloatField
 
 
 User = get_user_model()
 
-TOKEN_DICT = (
-    ('BTC', 'Bitcoin'),
-    ('ETH', 'Etherium'),
-    ('USDT', 'Tether'),
-    ('RUB', 'Russian ruble'),
-)
+
+class Token(models.Model):
+    name = models.CharField(
+        max_length=30,
+        unique=True,
+        verbose_name='Название'
+    )
+    ticker = models.CharField(
+        max_length=7,
+        verbose_name='Тикер'
+    )
+
+    def __str__(self):
+        return self.ticker
+
+    class Meta:
+        verbose_name = 'Токен'
+        verbose_name_plural = 'Токены'
+
+
+class Portfolio(models.Model):
+    owner = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='portfolio'
+    )
+    coin = models.ForeignKey(
+        Token,
+        on_delete=models.CASCADE,
+        related_name='portfolio'
+    )
+    amount = models.FloatField(
+        validators=[MinValueValidator(0)],
+        default=0,
+        verbose_name='количество'
+    )
+
+    class Meta:
+        verbose_name = 'Портфель'
+        verbose_name_plural = 'Портфели'
+        unique_together = ['owner', 'coin']
 
 
 class Transaction(models.Model):
@@ -22,51 +56,35 @@ class Transaction(models.Model):
     buyer = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name='transactions'
-    )
-    tranaction_date = models.DateTimeField()
-    first_coin = models.CharField(
-        max_length=50,
-        choices=sorted(TOKEN_DICT),
-    )
-    second_coin = models.CharField(
-        max_length=50,
-        choices=sorted(TOKEN_DICT)
+        related_name='transaction'
     )
     side = models.CharField(
         max_length=4,
-        choices=SIDE_CHOICES
+        choices=SIDE_CHOICES,
+        default='BUY'
     )
-    price = models.FloatField(validators=[MinValueValidator(0)])
-    amount = models.FloatField(validators=[MinValueValidator(0)])
-    comission = models.FloatField(validators=[MinValueValidator(0)])
-    comission_token = models.CharField(
-        max_length=50,
-        choices=sorted(TOKEN_DICT),
-        blank=True
+    buy_or_sell = models.ForeignKey(
+        Token,
+        on_delete=models.CASCADE,
+        related_name='transaction_buy'
     )
+    buy_or_sell_for = models.ForeignKey(
+        Token,
+        on_delete=models.CASCADE,
+        related_name='transaction_buy_for'
+    )
+    price = models.FloatField(
+        validators=[MinValueValidator(0)]
+    )
+    amount = models.FloatField(
+        validators=[MinValueValidator(0)]
+    )
+    fee = models.FloatField(
+        validators=[MinValueValidator(0)]
+    )
+    trans_date = models.DateTimeField()
 
     class Meta:
         verbose_name = 'Транзакция'
         verbose_name_plural = 'Транзакции'
-        ordering = ['-tranaction_date']
-
-
-class Portfolio(models.Model):
-    owner = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='portfolio'
-    )
-    coin = models.CharField(
-        max_length=50,
-        choices=sorted(TOKEN_DICT)
-    )
-    amount = models.FloatField(
-        validators=[MinValueValidator(0)],
-        default=0
-    )
-
-    class Meta:
-        verbose_name = 'Портфолио'
-        verbose_name_plural = 'Портфолио'
+        ordering = ['-trans_date']

@@ -1,6 +1,33 @@
 {% extends 'base.html' %}
 
-{% block title %}{% endblock %}
+{% block title %}
+  {{ position.coin }}
+{% endblock %}
 {% block content %}
-  Информация о монете {{ token.ticker }}
+  {{ position.coin }} {{ position.amount }}
+  <p><a class="btn btn-primary" href="{% url 'portfolio:add_transaction' %}" role="button">Добавить транзакцию</a></p>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Дата</th>
+        <th scope="col">Сторонa</th>
+        <th scope="col">Торговая пара</th>
+        <th scope="col">Цена</th>
+        <th scope="col">Количество</th>
+        <th scope="col">Комиссия</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for transaction in transactions %}
+        <tr>
+          <td>{{ transaction.trans_date }}</td>
+          <td>{{ transaction.side }}</td>
+          <td>{{ transaction.buy_or_sell }}/{{ transaction.buy_or_sell_for }}</td>
+          <td>{{ transaction.price }}</td>
+          <td>{{ transaction.amount }}</td>
+          <td>{{ transaction.fee }} {{ transaction.buy_or_sell }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 {% endblock  %}
