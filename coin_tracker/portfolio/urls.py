@@ -14,5 +14,5 @@ urlpatterns = [
         'portfolio/add-transaction',
         views.PortfolioAddTransaction.as_view(),
         name='add_transaction'
-    )
+    ),
 ]

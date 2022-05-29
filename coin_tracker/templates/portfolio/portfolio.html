@@ -21,7 +21,9 @@ Portfolio
       {% endfor %}  
     </tbody>
   </table>
-  <div class="text-center py-3">
+  <div class="row justify-content-center">
+    <div class="col-md-8 p-5">
     <a class="btn btn-primary" href="{% url 'portfolio:add' %}" role="button">Добавить</a>
+    </div>
   </div>
 {% endblock  %}

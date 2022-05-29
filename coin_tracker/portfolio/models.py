@@ -7,6 +7,7 @@ User = get_user_model()
 
 
 class Token(models.Model):
+    """Модель для токенов"""
     name = models.CharField(
         max_length=30,
         unique=True,
@@ -26,6 +27,7 @@ class Token(models.Model):
 
 
 class Portfolio(models.Model):
+    """Модель крипто-портфеля"""
     owner = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -49,6 +51,7 @@ class Portfolio(models.Model):
 
 
 class Transaction(models.Model):
+    """Модель транзакций по покупке и продажи крипты"""
     SIDE_CHOICES = [
         ('BUY', 'Buy'),
         ('SELL', 'Sell')

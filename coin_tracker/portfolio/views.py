@@ -7,6 +7,7 @@ from .forms import PortfolioForm, TransactionForm
 
 
 def amount_calc(transactions, position):
+    """Функция расчета кол-ва монет в портфеле"""
     buy_summ = transactions.filter(side='BUY').aggregate(
         Sum('amount')
     )['amount__sum']
@@ -24,6 +25,7 @@ def amount_calc(transactions, position):
 
 
 def index(request):
+    """Главной страница"""
     template = 'portfolio/index.html'
     text = 'Это главная страница портфолио'
     context = {
@@ -33,6 +35,7 @@ def index(request):
 
 
 def portfolio(request):
+    """Страница портфеля юзера"""
     template = 'portfolio/portfolio.html'
     tokens = Portfolio.objects.filter(owner=request.user)
     context = {
@@ -42,12 +45,14 @@ def portfolio(request):
 
 
 class PortfolioAddToken(CreateView):
+    """Страница добавления токена в портфель с формой"""
     template_name = 'portfolio/porfolio_add_token.html'
     form_class = PortfolioForm
     success_url = '/portfolio/'
 
 
 def token_detail(request, pk):
+    """Страница конкретного токена"""
     template = 'portfolio/token_detail.html'
     position = get_object_or_404(Portfolio, pk=pk)
     transactions = Transaction.objects.filter(
@@ -63,6 +68,7 @@ def token_detail(request, pk):
 
 
 class PortfolioAddTransaction(CreateView):
+    """Страница с добавлением тразакций"""
     template_name = 'portfolio/portfolio_add_transaction.html'
     form_class = TransactionForm
     success_url = '/portfolio/'
