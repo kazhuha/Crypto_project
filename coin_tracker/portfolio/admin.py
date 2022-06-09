@@ -9,9 +9,9 @@ class TokenAdmin(admin.ModelAdmin):
 
 
 class PortfolioAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'owner', 'coin')
+    list_display = ('pk', 'owner', 'coin', 'amount')
     search_fields = ('owner',)
-    filter_fields = ('owner', 'coin')
+    list_filter = ('owner', 'coin',)
 
 
 class TransactionAdmin(admin.ModelAdmin):
@@ -26,7 +26,7 @@ class TransactionAdmin(admin.ModelAdmin):
         'trans_date'
     )
     search_fields = ('buyer',)
-    filter_fields = ('buyer', 'buy', 'buy_for')
+    list_filter = ('buyer', 'buy_or_sell', 'buy_or_sell_for',)
 
 
 admin.site.register(Token, TokenAdmin)

@@ -5,7 +5,7 @@
 {% endblock %}
 {% block content %}
   {{ position.coin }} {{ position.amount }}
-  <p><a class="btn btn-primary" href="{% url 'portfolio:add_transaction' %}" role="button">Добавить транзакцию</a></p>
+  <p><a class="btn btn-primary" href="{% url 'portfolio:add_transaction' position.coin %}" role="button">Добавить транзакцию</a></p>
   <table class="table">
     <thead>
       <tr>
@@ -18,7 +18,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for transaction in transactions %}
+      {% for transaction in page_obj %}
         <tr>
           <td>{{ transaction.trans_date }}</td>
           <td>{{ transaction.side }}</td>
@@ -30,4 +30,5 @@
       {% endfor %}
     </tbody>
   </table>
+  {% include 'includes/paginator.html' %}
 {% endblock  %}

@@ -1,8 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}
-Portfolio
-{% endblock  %}
+{% block title %}ваш портфель{% endblock  %}
 
 {% block content %}
   <table class="table">
@@ -15,15 +13,13 @@ Portfolio
     <tbody>
       {% for token in tokens %}
         <tr>
-          <td><a href="{% url 'portfolio:detail' token.pk %}">{{ token.coin }}</a> </td>
+          <td><a href="{% url 'portfolio:detail' token.coin %}">{{ token.coin }}</a> </td>
           <td>{{ token.amount }}</td>
         </tr>
       {% endfor %}  
     </tbody>
   </table>
-  <div class="row justify-content-center">
-    <div class="col-md-8 p-5">
-    <a class="btn btn-primary" href="{% url 'portfolio:add' %}" role="button">Добавить</a>
-    </div>
+  <div class="col-md-fluid offset-md-fluid text-center">
+  <a class="btn btn-primary" href="{% url 'portfolio:add' %}" role="button">Добавить монету</a>
   </div>
 {% endblock  %}

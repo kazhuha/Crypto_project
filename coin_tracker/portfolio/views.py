@@ -1,8 +1,12 @@
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views.generic.edit import CreateView
 from django.db.models import Sum
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.utils import timezone
 
-from .models import Portfolio, Transaction
+from .models import Portfolio, Transaction, Token
 from .forms import PortfolioForm, TransactionForm
 
 
@@ -33,7 +37,7 @@ def index(request):
     }
     return render(request, template, context)
 
-
+@login_required
 def portfolio(request):
     """Страница портфеля юзера"""
     template = 'portfolio/portfolio.html'
@@ -50,19 +54,29 @@ class PortfolioAddToken(CreateView):
     form_class = PortfolioForm
     success_url = '/portfolio/'
 
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.owner = self.request.user
+        self.object.save()
+        return HttpResponseRedirect(self.success_url)
 
-def token_detail(request, pk):
+
+def token_detail(request, ticker):
     """Страница конкретного токена"""
     template = 'portfolio/token_detail.html'
-    position = get_object_or_404(Portfolio, pk=pk)
+    coin = get_object_or_404(Token, ticker=ticker)
+    position = get_object_or_404(Portfolio, owner=request.user, coin=coin.pk)
     transactions = Transaction.objects.filter(
         buyer=request.user,
-        buy_or_sell=position.coin.pk
+        buy_or_sell=coin.pk
     )
+    paginator = Paginator(transactions, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     amount_calc(transactions, position)
     context = {
         'position': position,
-        'transactions': transactions,
+        'page_obj': page_obj,
     }
     return render(request, template, context)
 
@@ -71,4 +85,20 @@ class PortfolioAddTransaction(CreateView):
     """Страница с добавлением тразакций"""
     template_name = 'portfolio/portfolio_add_transaction.html'
     form_class = TransactionForm
-    success_url = '/portfolio/'
+
+    def form_valid(self, form):
+        token = get_object_or_404(
+            Token,
+            ticker=self.request.path.split('/')[2]
+        )
+        print(token.pk)
+        self.object = form.save(commit=False)
+        self.object.buy_or_sell = token
+        self.object.buyer = self.request.user
+        self.object.save()
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_initial(self, *args, **kwargs):
+        initial = super(PortfolioAddTransaction, self).get_initial(**kwargs)
+        initial['trans_date'] = timezone.now()
+        return initial

@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.urls import reverse
+from django.utils import timezone
 
 
 User = get_user_model()
@@ -85,9 +87,13 @@ class Transaction(models.Model):
     fee = models.FloatField(
         validators=[MinValueValidator(0)]
     )
-    trans_date = models.DateTimeField()
+    trans_date = models.DateTimeField(
+    )
 
     class Meta:
         verbose_name = 'Транзакция'
         verbose_name_plural = 'Транзакции'
         ordering = ['-trans_date']
+
+    def get_absolute_url(self):
+        return reverse('portfolio:detail', args=[self.buy_or_sell])
