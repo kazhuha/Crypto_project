@@ -1,8 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator
 from django.urls import reverse
-from django.utils import timezone
 
 
 User = get_user_model()
@@ -18,6 +17,10 @@ class Token(models.Model):
     ticker = models.CharField(
         max_length=7,
         verbose_name='Тикер'
+    )
+    slug = models.SlugField(
+        max_length=20,
+        verbose_name='Слаг'
     )
 
     def __str__(self):
@@ -87,8 +90,7 @@ class Transaction(models.Model):
     fee = models.FloatField(
         validators=[MinValueValidator(0)]
     )
-    trans_date = models.DateTimeField(
-    )
+    trans_date = models.DateTimeField()
 
     class Meta:
         verbose_name = 'Транзакция'

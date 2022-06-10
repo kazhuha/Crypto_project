@@ -16,6 +16,11 @@
         <li class="nav-item">
           <a class="nav-link" href="{% url 'portfolio:portfolio' %}">Портфель</a>
         </li>
+        {% if request.user.username == "admin"  %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'portfolio:fill' %}">Обновить БД</a>
+          </li>
+        {% endif %}
       </ul>
       <ul class="navbar-nav">
         {% if user.is_authenticated %}

@@ -4,7 +4,7 @@ from .models import Portfolio, Token, Transaction
 
 
 class TokenAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'name', 'ticker')
+    list_display = ('pk', 'name', 'ticker', 'slug')
     search_fields = ('name',)
 
 

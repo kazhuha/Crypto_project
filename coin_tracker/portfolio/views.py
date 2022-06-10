@@ -5,6 +5,8 @@ from django.db.models import Sum
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.utils import timezone
+from requests import Session
+from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 
 from .models import Portfolio, Transaction, Token
 from .forms import PortfolioForm, TransactionForm
@@ -28,6 +30,30 @@ def amount_calc(transactions, position):
     position.save()
 
 
+def model_token_fill(request):
+    "Заполняет БД токенами с Бинанса"
+    url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/map'
+    headers = {
+      'Accepts': 'application/json',
+      'X-CMC_PRO_API_KEY': 'b6ca85ee-b64c-44b2-9c42-a70398331754',
+    }
+    session = Session()
+    session.headers.update(headers)
+    try:
+        response = session.get(url).json()
+        data = response['data']
+        for coin in data:
+            name = coin['name']
+            ticker = coin['symbol']
+            slug = coin['slug']
+            if not Token.objects.filter(name=name).exists():
+                Token.objects.create(name=name, ticker=ticker, slug=slug)
+    except (ConnectionError, Timeout, TooManyRedirects) as e:
+        print(e)
+    template = 'portfolio/token_filled_success.html'
+    return render(request, template)
+
+
 def index(request):
     """Главной страница"""
     template = 'portfolio/index.html'
@@ -36,6 +62,7 @@ def index(request):
         'text': text
     }
     return render(request, template, context)
+
 
 @login_required
 def portfolio(request):

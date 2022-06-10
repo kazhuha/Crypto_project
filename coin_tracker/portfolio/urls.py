@@ -15,4 +15,5 @@ urlpatterns = [
         views.PortfolioAddTransaction.as_view(),
         name='add_transaction'
     ),
+    path('fill/', views.model_token_fill, name='fill'),
 ]
