@@ -6,10 +6,11 @@ from .models import Portfolio, Transaction
 class PortfolioForm(ModelForm):
     class Meta:
         model = Portfolio
-        fields = ('coin',)
+        fields = ('coin', 'amount')
 
 
 class TransactionForm(ModelForm):
+
     class Meta:
         model = Transaction
         fields = (

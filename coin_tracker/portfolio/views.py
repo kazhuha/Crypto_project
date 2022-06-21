@@ -31,7 +31,7 @@ def amount_calc(transactions, position):
 
 
 def model_token_fill(request):
-    "Заполняет БД токенами с Бинанса"
+    "Заполняет БД токенами с Coinmarketcap"
     url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/map'
     headers = {
       'Accepts': 'application/json',
