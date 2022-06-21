@@ -1,3 +1,5 @@
+import os
+
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views.generic.edit import CreateView
@@ -7,9 +9,12 @@ from django.core.paginator import Paginator
 from django.utils import timezone
 from requests import Session
 from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
+from dotenv import load_dotenv
 
 from .models import Portfolio, Transaction, Token
 from .forms import PortfolioForm, TransactionForm
+
+load_dotenv()
 
 
 def amount_calc(transactions, position):
@@ -35,7 +40,7 @@ def model_token_fill(request):
     url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/map'
     headers = {
       'Accepts': 'application/json',
-      'X-CMC_PRO_API_KEY': 'b6ca85ee-b64c-44b2-9c42-a70398331754',
+      'X-CMC_PRO_API_KEY': os.getenv('X-CMC_PRO_API_KEY'),
     }
     session = Session()
     session.headers.update(headers)
